@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="start"></button>
+  </body>
+  <script>
+    var startButton = document.getElementById("start");
+    startButton.disabled = true;
+
+    var ws = new WebSocket("ws://localhost:8080/server");
+    ws.onopen = () => {
+        startButton.disabled = false;
+    }
+
+    var localPeer = new RTCPeerConnection();
+
+    var errorHandler = (error) => {
+        console.log("Found Error: " + error);
+    }
+    let gotLocalDescription = (description) => {
+        localPeer.setLocalDescription(description);
+        ws.send(JSON.stringify(buildWebSocketPayload("SDP_OFFER", description)));
+    }
+    let buildWebSocketPayload = (messageType, payload) => {
+        return {
+            messageType, payload
+        }
+    }
+    let gotLocalIceCandidate = (event) => {
+      ws.send(JSON.stringify(buildWebSocketPayload("ICE_CANDIDATE", event)));
+    }
+
+    ws.onmessage = (message) => {
+      console.log("Received message: ", message);
+    };
+
+    startButton.onclick = () => {
+      ws.send(JSON.stringify(buildWebSocketPayload("START")));
+      //localPeer.createOffer(gotLocalDescription, errorHandler);
+      localPeer.onicecandidate = gotLocalIceCandidate;
+    };
+  </script>
+</html>
