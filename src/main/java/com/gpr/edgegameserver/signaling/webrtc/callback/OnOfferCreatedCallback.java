@@ -3,6 +3,8 @@ package com.gpr.edgegameserver.signaling.webrtc.callback;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.gpr.edgegameserver.signaling.Sdp;
+import com.gpr.edgegameserver.websocket.WebSocketMessage;
 import org.freedesktop.gstreamer.WebRTCSessionDescription;
 import org.freedesktop.gstreamer.elements.WebRTCBin;
 import org.slf4j.Logger;
@@ -11,6 +13,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+
+import static com.gpr.edgegameserver.websocket.WebSocketMessageType.SDP_OFFER;
 
 public class OnOfferCreatedCallback implements WebRTCBin.CREATE_OFFER {
 
@@ -32,14 +36,9 @@ public class OnOfferCreatedCallback implements WebRTCBin.CREATE_OFFER {
     public void onOfferCreated(WebRTCSessionDescription offer) {
         webRTCBin.setLocalDescription(offer);
         try {
-            JsonNode rootNode = mapper.createObjectNode();
-            JsonNode sdpNode = mapper.createObjectNode();
-            ((ObjectNode) sdpNode).put("type", "offer");
-            ((ObjectNode) sdpNode).put("sdp", offer.getSDPMessage().toString());
-            ((ObjectNode) rootNode).set("sdp", sdpNode);
-            String json = mapper.writeValueAsString(rootNode);
-            logger.info("Sending offer:\n{}", json);
-            this.session.sendMessage(new TextMessage(json));
+            Sdp sdp = new Sdp(offer.getSDPMessage().toString(), "offer");
+            WebSocketMessage message = new WebSocketMessage(SDP_OFFER, mapper.valueToTree(sdp));
+            this.session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
         } catch (IOException e) {
             logger.error("Couldn't write JSON", e);
         }

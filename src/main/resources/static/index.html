@@ -37,7 +37,22 @@
     }
 
     ws.onmessage = (message) => {
-      console.log("Received message: ", message);
+      let data = JSON.parse(message.data);
+      if (data.messageType) {
+        switch (data.messageType) {
+          case "SDP_OFFER":
+            console.log("Received SDP: ", data.payload);  
+            localPeer.setRemoteDescription(data.payload);
+            break;
+          case "ICE_CANDIDATE":
+            console.log("Received ICE candidate: ", data.payload);
+            var ice = new RTCIceCandidate(data.payload);
+            localPeer.addIceCandidate(ice);
+            break;
+        }
+      } else {
+        console.log("Not typed message received: ", data);
+      }
     };
 
     startButton.onclick = () => {

@@ -1,8 +1,8 @@
 package com.gpr.edgegameserver.signaling.webrtc.callback;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.gpr.edgegameserver.signaling.ICECandidate;
+import com.gpr.edgegameserver.websocket.WebSocketMessage;
 import org.freedesktop.gstreamer.elements.WebRTCBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +10,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+
+import static com.gpr.edgegameserver.websocket.WebSocketMessageType.ICE_CANDIDATE;
 
 public class OnIceCandidateCallback implements WebRTCBin.ON_ICE_CANDIDATE {
 
@@ -26,16 +28,10 @@ public class OnIceCandidateCallback implements WebRTCBin.ON_ICE_CANDIDATE {
 
     @Override
     public void onIceCandidate(int sdpMLineIndex, String candidate) {
-        JsonNode rootNode = mapper.createObjectNode();
-        JsonNode iceNode = mapper.createObjectNode();
-        ((ObjectNode) iceNode).put("candidate", candidate);
-        ((ObjectNode) iceNode).put("sdpMLineIndex", sdpMLineIndex);
-        ((ObjectNode) rootNode).set("ice", iceNode);
-
+        ICECandidate candidateObj = new ICECandidate(candidate, sdpMLineIndex);
         try {
-            String json = mapper.writeValueAsString(rootNode);
-            logger.info("ON_ICE_CANDIDATE: " + json);
-            this.session.sendMessage(new TextMessage(json));
+            WebSocketMessage message = new WebSocketMessage(ICE_CANDIDATE, mapper.valueToTree(candidateObj));
+            this.session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
         } catch (IOException e) {
             logger.error("Couldn't write JSON", e);
         }

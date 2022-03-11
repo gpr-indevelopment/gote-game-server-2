@@ -2,20 +2,28 @@ package com.gpr.edgegameserver.signaling;
 
 public class Sdp {
 
-    private final String body;
+    private final String sdp;
 
-    public Sdp(String body) {
-        this.body = body;
+    private final String type;
+
+    public Sdp(String sdp, String type) {
+        this.sdp = sdp;
+        this.type = type;
     }
 
-    public String getBody() {
-        return body;
+    public String getSdp() {
+        return sdp;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override
     public String toString() {
         return "Sdp{" +
-                "body='" + body + '\'' +
+                "sdp='" + sdp + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

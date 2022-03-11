@@ -28,7 +28,7 @@ public class WebRTCBinService {
 
     public void receiveSdpAnswer(Sdp sdp, WebSocketSession session) {
         SDPMessage sdpMessage = new SDPMessage();
-        sdpMessage.parseBuffer(sdp.getBody());
+        sdpMessage.parseBuffer(sdp.getSdp());
         WebRTCSession webRTCSession = webRTCSessionService.loadWebRTCSession(session);
         webRTCSession.getWebRTCBin().setRemoteDescription(new WebRTCSessionDescription(WebRTCSDPType.ANSWER, sdpMessage));
     }

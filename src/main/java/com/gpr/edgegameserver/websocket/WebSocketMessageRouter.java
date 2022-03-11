@@ -32,7 +32,7 @@ public class WebSocketMessageRouter {
                 webRTCBinService.startSignaling(session);
                 break;
             case SDP_ANSWER:
-                webRTCBinService.receiveSdpAnswer(new Sdp(message.getPayload().toString()), session);
+                webRTCBinService.receiveSdpAnswer(new Sdp(message.getPayload().toString(), "answer"), session);
                 break;
             default:
                 logger.warn("It was not possible to route message: {}", message);
