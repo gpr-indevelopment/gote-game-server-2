@@ -1,8 +1,6 @@
 package com.gpr.edgegameserver.signaling.webrtc.callback;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gpr.edgegameserver.signaling.Sdp;
 import com.gpr.edgegameserver.websocket.WebSocketMessage;
 import org.freedesktop.gstreamer.WebRTCSessionDescription;
@@ -18,7 +16,7 @@ import static com.gpr.edgegameserver.websocket.WebSocketMessageType.SDP_OFFER;
 
 public class OnOfferCreatedCallback implements WebRTCBin.CREATE_OFFER {
 
-    Logger logger = LoggerFactory.getLogger(OnOfferCreatedCallback.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OnOfferCreatedCallback.class);
 
     private final WebRTCBin webRTCBin;
 
@@ -34,13 +32,14 @@ public class OnOfferCreatedCallback implements WebRTCBin.CREATE_OFFER {
 
     @Override
     public void onOfferCreated(WebRTCSessionDescription offer) {
+        LOGGER.info("Created local WebRTCBin SDP offer: {}. SessionID: {}", offer.getSDPMessage().toString(), session.getId());
         webRTCBin.setLocalDescription(offer);
         try {
             Sdp sdp = new Sdp(offer.getSDPMessage().toString(), "offer");
             WebSocketMessage message = new WebSocketMessage(SDP_OFFER, mapper.valueToTree(sdp));
             this.session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
         } catch (IOException e) {
-            logger.error("Couldn't write JSON", e);
+            LOGGER.error("Couldn't create WebSocketMessage object for SDP offer: " + offer.getSDPMessage().toString(), e);
         }
     }
 }

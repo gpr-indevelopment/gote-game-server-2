@@ -1,6 +1,5 @@
 package com.gpr.edgegameserver.websocket;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class WebSocketMessage {
@@ -9,8 +8,8 @@ public class WebSocketMessage {
 
     private final JsonNode payload;
 
-    public WebSocketMessage(@JsonProperty("messageType") WebSocketMessageType messageType,
-                            @JsonProperty("payload") JsonNode payload) {
+    public WebSocketMessage(WebSocketMessageType messageType,
+                            JsonNode payload) {
         this.messageType = messageType;
         this.payload = payload;
     }
@@ -27,7 +26,7 @@ public class WebSocketMessage {
     public String toString() {
         return "WebSocketPayload{" +
                 "messageType=" + messageType.name() +
-                ", payload=" + payload.toString() +
+                ", payload=" + payload +
                 '}';
     }
 }

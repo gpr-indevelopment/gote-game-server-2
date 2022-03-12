@@ -15,7 +15,7 @@ import static com.gpr.edgegameserver.websocket.WebSocketMessageType.ICE_CANDIDAT
 
 public class OnIceCandidateCallback implements WebRTCBin.ON_ICE_CANDIDATE {
 
-    Logger logger = LoggerFactory.getLogger(OnIceCandidateCallback.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OnIceCandidateCallback.class);
 
     private final ObjectMapper mapper;
 
@@ -28,12 +28,13 @@ public class OnIceCandidateCallback implements WebRTCBin.ON_ICE_CANDIDATE {
 
     @Override
     public void onIceCandidate(int sdpMLineIndex, String candidate) {
+        LOGGER.info("Generated local ICE Candidate: {} on SessionID: {}", candidate, session.getId());
         ICECandidate candidateObj = new ICECandidate(candidate, sdpMLineIndex);
         try {
             WebSocketMessage message = new WebSocketMessage(ICE_CANDIDATE, mapper.valueToTree(candidateObj));
             this.session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
         } catch (IOException e) {
-            logger.error("Couldn't write JSON", e);
+            LOGGER.error("Couldn't create WebSocketMessage object for ICE Candidate: " + candidate, e);
         }
     }
 }

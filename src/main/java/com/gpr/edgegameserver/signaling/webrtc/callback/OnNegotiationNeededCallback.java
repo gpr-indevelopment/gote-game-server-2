@@ -9,7 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class OnNegotiationNeededCallback implements WebRTCBin.ON_NEGOTIATION_NEEDED {
 
-    Logger logger = LoggerFactory.getLogger(OnNegotiationNeededCallback.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OnNegotiationNeededCallback.class);
 
     private final WebRTCBin webRTCBin;
 
@@ -25,7 +25,7 @@ public class OnNegotiationNeededCallback implements WebRTCBin.ON_NEGOTIATION_NEE
 
     @Override
     public void onNegotiationNeeded(Element elem) {
-        logger.info("onNegotiationNeeded: " + elem.getName());
+        LOGGER.info("Firing callback onNegotiationNeeded on SessionID: {} for element: {}", session.getId(), elem.getName());
         this.webRTCBin.createOffer(new OnOfferCreatedCallback(webRTCBin, mapper, session));
     }
 }

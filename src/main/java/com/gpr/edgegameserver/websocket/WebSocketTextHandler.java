@@ -3,6 +3,7 @@ package com.gpr.edgegameserver.websocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpr.edgegameserver.signaling.MalformattedSignalingException;
+import com.gpr.edgegameserver.util.DeserializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class WebSocketTextHandler extends TextWebSocketHandler {
 
-    Logger logger = LoggerFactory.getLogger(WebSocketTextHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketTextHandler.class);
 
     private final ObjectMapper objectMapper;
 
@@ -26,18 +27,18 @@ public class WebSocketTextHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage incomingMessage) throws Exception {
-        logger.info("Received message: {}", incomingMessage);
+        LOGGER.info("Received message: {}", incomingMessage);
         try {
             WebSocketMessage message = deserializeMessage(incomingMessage);
             webSocketMessageRouter.routeMessage(message, session);
         } catch (MalformattedSignalingException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
     private WebSocketMessage deserializeMessage(TextMessage message) throws MalformattedSignalingException {
         try {
-            return objectMapper.readValue(message.getPayload(), WebSocketMessage.class);
+            return DeserializationUtils.toWebSocketMessage(objectMapper.readTree(message.getPayload()));
         } catch (JsonProcessingException e) {
             String errorMsg = String.format("MalformattedSignalingException while converting input message from WebSocket to a payload. Message: %s", message.getPayload());
             throw new MalformattedSignalingException(errorMsg, e);

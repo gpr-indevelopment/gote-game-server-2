@@ -8,9 +8,11 @@
   </head>
   <body>
     <button id="start"></button>
+    <video id="stream" autoplay playsinline>Your browser doesn't support video</video>
   </body>
   <script>
     var startButton = document.getElementById("start");
+    var video = document.getElementById("stream");
     startButton.disabled = true;
 
     var ws = new WebSocket("ws://localhost:8080/server");
@@ -25,15 +27,27 @@
     }
     let gotLocalDescription = (description) => {
         localPeer.setLocalDescription(description);
-        ws.send(JSON.stringify(buildWebSocketPayload("SDP_OFFER", description)));
+        ws.send(JSON.stringify(buildWebSocketPayload("SDP_ANSWER", description)));
     }
     let buildWebSocketPayload = (messageType, payload) => {
         return {
             messageType, payload
         }
     }
+
+    let gotRemoteTrack = (event) => {
+      if (video.srcObject !== event.streams[0]) {
+          console.log('Incoming stream. Streams length: ' + event.streams.length);
+          video.srcObject = event.streams[0];
+      }
+    }
+
     let gotLocalIceCandidate = (event) => {
-      ws.send(JSON.stringify(buildWebSocketPayload("ICE_CANDIDATE", event)));
+      if (event.candidate) {
+        ws.send(JSON.stringify(buildWebSocketPayload("ICE_CANDIDATE", event.candidate)));
+      } else {
+        console.log("All ICE candidates have been sent.")
+      }
     }
 
     ws.onmessage = (message) => {
@@ -43,6 +57,7 @@
           case "SDP_OFFER":
             console.log("Received SDP: ", data.payload);  
             localPeer.setRemoteDescription(data.payload);
+            localPeer.createAnswer(gotLocalDescription, errorHandler);
             break;
           case "ICE_CANDIDATE":
             console.log("Received ICE candidate: ", data.payload);
@@ -57,8 +72,8 @@
 
     startButton.onclick = () => {
       ws.send(JSON.stringify(buildWebSocketPayload("START")));
-      //localPeer.createOffer(gotLocalDescription, errorHandler);
       localPeer.onicecandidate = gotLocalIceCandidate;
+      localPeer.ontrack = gotRemoteTrack;
     };
   </script>
 </html>

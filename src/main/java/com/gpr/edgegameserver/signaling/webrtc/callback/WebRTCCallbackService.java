@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 public class WebRTCCallbackService {
 
-    Logger logger = LoggerFactory.getLogger(WebRTCCallbackService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebRTCCallbackService.class);
 
     private final ObjectMapper mapper;
 
@@ -19,6 +19,7 @@ public class WebRTCCallbackService {
     }
 
     public void setupWebRtc(WebRTCBin webRTCBin, WebSocketSession session) {
+        LOGGER.info("Setting up WebRTCBin for SessionID: {}", session.getId());
         webRTCBin.connect(new OnNegotiationNeededCallback(webRTCBin, mapper, session));
         webRTCBin.connect(new OnIceCandidateCallback(mapper, session));
     }
