@@ -1,7 +1,6 @@
 package com.gpr.edgegameserver.signaling;
 
 import com.gpr.edgegameserver.streaming.WebRTCSession;
-import com.gpr.edgegameserver.websocket.WebSocketMessageRouter;
 import org.freedesktop.gstreamer.SDPMessage;
 import org.freedesktop.gstreamer.WebRTCSDPType;
 import org.freedesktop.gstreamer.WebRTCSessionDescription;
@@ -13,7 +12,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 public class WebRTCBinService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketMessageRouter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebRTCBinService.class);
 
     private final WebRTCSessionService webRTCSessionService;
 

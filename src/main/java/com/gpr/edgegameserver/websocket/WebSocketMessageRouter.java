@@ -1,9 +1,7 @@
 package com.gpr.edgegameserver.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpr.edgegameserver.signaling.MalformattedSignalingException;
-import com.gpr.edgegameserver.signaling.Sdp;
 import com.gpr.edgegameserver.signaling.WebRTCBinService;
 import com.gpr.edgegameserver.util.DeserializationUtils;
 import org.slf4j.Logger;
@@ -18,11 +16,8 @@ public class WebSocketMessageRouter {
 
     private final WebRTCBinService webRTCBinService;
 
-    private final ObjectMapper objectMapper;
-
-    public WebSocketMessageRouter(WebRTCBinService webRTCBinService, ObjectMapper objectMapper) {
+    public WebSocketMessageRouter(WebRTCBinService webRTCBinService) {
         this.webRTCBinService = webRTCBinService;
-        this.objectMapper = objectMapper;
     }
 
     public void routeMessage(WebSocketMessage message, WebSocketSession session) throws MalformattedSignalingException {
@@ -33,10 +28,10 @@ public class WebSocketMessageRouter {
                 webRTCBinService.startSignaling(session);
                 break;
             case SDP_ANSWER:
-                webRTCBinService.receiveSdpAnswer(DeserializationUtils.toSdp(message.getPayload()), session);
+                webRTCBinService.receiveSdpAnswer(DeserializationUtils.toSdp(payload), session);
                 break;
             case ICE_CANDIDATE:
-                webRTCBinService.receiveIceCandidate(DeserializationUtils.toIceCandidate(message.getPayload()), session);
+                webRTCBinService.receiveIceCandidate(DeserializationUtils.toIceCandidate(payload), session);
                 break;
             default:
                 LOGGER.warn("It was not possible to route message: {}", message);
