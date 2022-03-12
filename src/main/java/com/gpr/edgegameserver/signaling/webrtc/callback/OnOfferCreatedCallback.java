@@ -32,10 +32,11 @@ public class OnOfferCreatedCallback implements WebRTCBin.CREATE_OFFER {
 
     @Override
     public void onOfferCreated(WebRTCSessionDescription offer) {
-        LOGGER.info("Created local WebRTCBin SDP offer: {}. SessionID: {}", offer.getSDPMessage().toString(), session.getId());
+        String sdpOffer = offer.getSDPMessage().toString();
+        LOGGER.info("Created local WebRTCBin SDP offer: {}. SessionID: {}", sdpOffer, session.getId());
         webRTCBin.setLocalDescription(offer);
         try {
-            Sdp sdp = new Sdp(offer.getSDPMessage().toString(), "offer");
+            Sdp sdp = new Sdp(sdpOffer, "offer");
             WebSocketMessage message = new WebSocketMessage(SDP_OFFER, mapper.valueToTree(sdp));
             this.session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
         } catch (IOException e) {
