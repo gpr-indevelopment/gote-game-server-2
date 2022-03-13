@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Button, Divider, Space, Spin, notification } from "antd";
+import { config } from "./constants";
 
 export default function WebRTCVideo(props) {
   const [localPeer, setLocalPeer] = useState();
@@ -127,7 +128,7 @@ export default function WebRTCVideo(props) {
 
   let onConnectClick = () => {
     setLoading(true);
-    setWs(new WebSocket("ws://localhost:8080/server"));
+    setWs(new WebSocket(config.url));
     setLocalPeer(new RTCPeerConnection());
     setConnectDisabled(true);
     setLoading(false);
