@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Button, Divider, Space, Spin, notification } from "antd";
 
 export default function WebRTCVideo(props) {
-  const [localPeer, setLocalPeer] = useState(new RTCPeerConnection());
+  const [localPeer, setLocalPeer] = useState();
   const [startButtonDisabled, setStartButtonDisabled] = useState(true);
   const [stopButtonDisabled, setStopButtonDisabled] = useState(true);
   const [connectDisabled, setConnectDisabled] = useState(false);
@@ -128,6 +128,7 @@ export default function WebRTCVideo(props) {
   let onConnectClick = () => {
     setLoading(true);
     setWs(new WebSocket("ws://localhost:8080/server"));
+    setLocalPeer(new RTCPeerConnection());
     setConnectDisabled(true);
     setLoading(false);
   };
@@ -135,8 +136,8 @@ export default function WebRTCVideo(props) {
   useEffect(() => {
     if (ws) {
       ws.onopen = onWebSocketOpen;
-      ws.onmessage = onWebSocketMessage;
-      ws.onclose = () => errorHandler("Connection with WebSocket closed");
+    ws.onmessage = onWebSocketMessage;
+    ws.onclose = () => errorHandler("Connection with WebSocket closed");
     }
   }, [ws, onWebSocketOpen, onWebSocketMessage, errorHandler]);
 

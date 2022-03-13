@@ -12,7 +12,7 @@ import javax.annotation.PreDestroy;
 @Service
 public class GStreamerVideoService {
 
-    private static final String VIDEO_BIN_DESCRIPTION = "dxgiscreencapsrc cursor=true ! capsfilter caps=\"video/x-raw,framerate=60/1\" ! queue ! nvh264enc bitrate=2250 rc-mode=cbr gop-size=-1 qos=true preset=low-latency-hq ! capsfilter caps=\"video/x-h264,profile=high\" ! queue ! rtph264pay ! capsfilter caps=\"application/x-rtp,media=video,encoding-name=H264,width=1280,height=720,payload=123\"";
+    private static final String VIDEO_BIN_DESCRIPTION = "dxgiscreencapsrc cursor=true ! capsfilter caps=\"video/x-raw,framerate=60/1\" ! nvh264enc bitrate=2250 rc-mode=vbr qos=true preset=low-latency-hq ! rtph264pay";
 
     @PreDestroy
     private void destroy() {
