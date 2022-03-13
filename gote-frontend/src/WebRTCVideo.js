@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button, Divider, Space, Spin } from "antd";
+import React, { useState, useCallback, useEffect } from "react";
+import { Button, Divider, Space, Spin, notification } from "antd";
 
 export default function WebRTCVideo(props) {
   const [localPeer, setLocalPeer] = useState(new RTCPeerConnection());
   const [startButtonDisabled, setStartButtonDisabled] = useState(true);
   const [stopButtonDisabled, setStopButtonDisabled] = useState(true);
-  const [ws] = useState(new WebSocket("ws://localhost:8080/server"));
+  const [connectDisabled, setConnectDisabled] = useState(false);
+  const [ws, setWs] = useState();
   const [loading, setLoading] = useState(false);
-
-  // Global error handling function
-  let errorHandler = (error) => {
-    console.log("Found Error: " + error);
-  };
 
   // Standard message format to backend
   let sendWsMessage = useCallback(
@@ -28,13 +24,36 @@ export default function WebRTCVideo(props) {
     };
   };
 
+  // Function to reset the frontend app to the initial state
+  let resetState = useCallback(() => {
+    setConnectDisabled(false);
+    setStartButtonDisabled(true);
+    setStopButtonDisabled(true);
+    setLocalPeer(new RTCPeerConnection());
+    setWs(null);
+    sendWsMessage("STOP");
+  }, [sendWsMessage]);
+
+  // Global error handling function
+  let errorHandler = useCallback(
+    (error) => {
+      console.log("Error found: " + error);
+      notification.error({
+        message: "An error was found on WebRTC",
+        description: error,
+      });
+      resetState();
+    },
+    [resetState]
+  );
+
   // WebRTC callbacks
   let gotLocalDescription = useCallback(
     (description) => {
-      localPeer.setLocalDescription(description);
+      localPeer.setLocalDescription(description).catch(errorHandler);
       sendWsMessage("SDP_ANSWER", description);
     },
-    [localPeer, sendWsMessage]
+    [localPeer, sendWsMessage, errorHandler]
   );
 
   let gotRemoteTrack = (event) => {
@@ -45,7 +64,7 @@ export default function WebRTCVideo(props) {
       setStopButtonDisabled(false);
       setLoading(false);
     } else {
-        errorHandler("Video source object is already filled!");
+      errorHandler("Video source object is already filled!");
     }
   };
 
@@ -69,13 +88,15 @@ export default function WebRTCVideo(props) {
         switch (data.messageType) {
           case "SDP_OFFER":
             console.log("Received SDP: ", data.payload);
-            localPeer.setRemoteDescription(data.payload);
-            localPeer.createAnswer(gotLocalDescription, errorHandler);
+            localPeer.setRemoteDescription(data.payload).catch(errorHandler);
+            localPeer
+              .createAnswer(gotLocalDescription, errorHandler)
+              .catch(errorHandler);
             break;
           case "ICE_CANDIDATE":
             console.log("Received ICE candidate: ", data.payload);
             var ice = new RTCIceCandidate(data.payload);
-            localPeer.addIceCandidate(ice);
+            localPeer.addIceCandidate(ice).catch(errorHandler);
             break;
           default:
             console.log("Unknown messageType. Will ignore: ", data.messageType);
@@ -85,28 +106,39 @@ export default function WebRTCVideo(props) {
         console.log("Not typed message received: ", data);
       }
     },
-    [localPeer, gotLocalDescription]
+    [localPeer, gotLocalDescription, errorHandler]
   );
 
+  // Button callbacks
   let onStartClick = () => {
-      setLoading(true);
-      setStartButtonDisabled(true);
+    setLoading(true);
+    setStartButtonDisabled(true);
     sendWsMessage("START");
     localPeer.onicecandidate = gotLocalIceCandidate;
     localPeer.ontrack = gotRemoteTrack;
   };
 
-  let onStopClick = () => {
+  let onStopClick = useCallback(() => {
     setLocalPeer(new RTCPeerConnection());
     sendWsMessage("STOP");
     setStartButtonDisabled(false);
     setStopButtonDisabled(true);
-  }
+  }, [sendWsMessage]);
+
+  let onConnectClick = () => {
+    setLoading(true);
+    setWs(new WebSocket("ws://localhost:8080/server"));
+    setConnectDisabled(true);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    ws.onopen = onWebSocketOpen;
-    ws.onmessage = onWebSocketMessage;
-  }, [ws, onWebSocketOpen, onWebSocketMessage]);
+    if (ws) {
+      ws.onopen = onWebSocketOpen;
+      ws.onmessage = onWebSocketMessage;
+      ws.onclose = () => errorHandler("Connection with WebSocket closed");
+    }
+  }, [ws, onWebSocketOpen, onWebSocketMessage, errorHandler]);
 
   return (
     <Spin spinning={loading}>
@@ -116,6 +148,17 @@ export default function WebRTCVideo(props) {
         </video>
         <Divider />
         <Space>
+          <Button
+            type="primary"
+            disabled={connectDisabled}
+            onClick={onConnectClick}
+            size="large"
+            style={{
+              width: 120,
+            }}
+          >
+            Connect
+          </Button>
           <Button
             id="start"
             type="primary"
