@@ -25,4 +25,8 @@ public class WebRTCBinRegistry {
     public Optional<WebRTCSession> retrieveSession(String id) {
         return Optional.ofNullable(sessionMap.get(id));
     }
+
+    public void removeSession(String id) {
+        sessionMap.remove(id);
+    }
 }

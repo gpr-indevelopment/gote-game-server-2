@@ -17,6 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketTextHandler, "/server");
+        registry.addHandler(webSocketTextHandler, "/server")
+                .setAllowedOrigins("http://localhost:3000");
     }
 }

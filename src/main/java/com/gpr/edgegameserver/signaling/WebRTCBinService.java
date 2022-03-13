@@ -26,6 +26,11 @@ public class WebRTCBinService {
         webRTCSession.getPipeline().play();
     }
 
+    public void stopSignaling(WebSocketSession session) {
+        LOGGER.info("Stopping SessionID: {}", session.getId());
+        webRTCSessionService.removeSession(session);
+    }
+
     public void receiveSdpAnswer(Sdp sdp, WebSocketSession session) {
         LOGGER.info("Received SDP answer: {}. SessionID: {}", sdp, session.getId());
         SDPMessage sdpMessage = new SDPMessage();

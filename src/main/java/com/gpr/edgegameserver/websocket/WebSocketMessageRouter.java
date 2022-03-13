@@ -27,6 +27,9 @@ public class WebSocketMessageRouter {
             case START:
                 webRTCBinService.startSignaling(session);
                 break;
+            case STOP:
+                webRTCBinService.stopSignaling(session);
+                break;
             case SDP_ANSWER:
                 webRTCBinService.receiveSdpAnswer(DeserializationUtils.toSdp(payload), session);
                 break;

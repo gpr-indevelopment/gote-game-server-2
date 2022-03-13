@@ -23,6 +23,13 @@ public class WebRTCSessionService {
         this.callbackService = callbackService;
     }
 
+    public void removeSession(WebSocketSession session) {
+        WebRTCSession webRTCSession = loadWebRTCSession(session);
+        webRTCSession.getPipeline().stop();
+        webRTCSession.getWebRTCBin().dispose();
+        binRegistry.removeSession(session.getId());
+    }
+
     public WebRTCSession loadWebRTCSession(WebSocketSession session) {
         WebRTCSession webRTCSession;
         Optional<WebRTCSession> sessionOpt = binRegistry.retrieveSession(session.getId());

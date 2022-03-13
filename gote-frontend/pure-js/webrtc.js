@@ -4,6 +4,9 @@ var video = document.getElementById("stream");
 var ws = new WebSocket("ws://localhost:8080/server");
 var localPeer = new RTCPeerConnection();
 
+// Start button is disabled until we can start the session
+startButton.disabled = true;
+
 // Global error handling function
 var errorHandler = (error) => {
   console.log("Found Error: " + error);
