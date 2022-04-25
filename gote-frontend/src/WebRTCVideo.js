@@ -95,9 +95,10 @@ export default function WebRTCVideo(props) {
               .catch(errorHandler);
             break;
           case "ICE_CANDIDATE":
-            console.log("Received ICE candidate: ", data.payload);
-            var ice = new RTCIceCandidate(data.payload);
-            localPeer.addIceCandidate(ice).catch(errorHandler);
+            console.log("Received ICE candidate. Will ignore: ", data.payload);
+            // What to do if remote ICE candidates are not ignored.
+            // var ice = new RTCIceCandidate(data.payload);
+            // localPeer.addIceCandidate(ice).catch(errorHandler);
             break;
           default:
             console.log("Unknown messageType. Will ignore: ", data.messageType);
