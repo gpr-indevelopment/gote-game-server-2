@@ -13,32 +13,41 @@ public class WebRTCSessionService {
 
     private final GStreamerVideoService gStreamerVideoService;
 
-    private final WebRTCBinRegistry binRegistry;
+    private final WebRTCSessionRegistry sessionRegistry;
 
     private final WebRTCCallbackService callbackService;
 
-    public WebRTCSessionService(GStreamerVideoService gStreamerVideoService, WebRTCBinRegistry binRegistry, WebRTCCallbackService callbackService) {
+    public WebRTCSessionService(GStreamerVideoService gStreamerVideoService, WebRTCSessionRegistry sessionRegistry, WebRTCCallbackService callbackService) {
         this.gStreamerVideoService = gStreamerVideoService;
-        this.binRegistry = binRegistry;
+        this.sessionRegistry = sessionRegistry;
         this.callbackService = callbackService;
     }
 
     public void removeSession(WebSocketSession session) {
-        WebRTCSession webRTCSession = loadWebRTCSession(session);
-        webRTCSession.getPipeline().stop();
-        webRTCSession.getWebRTCBin().dispose();
-        binRegistry.removeSession(session.getId());
+        removeSession(session.getId());
     }
 
-    public WebRTCSession loadWebRTCSession(WebSocketSession session) {
+    public void removeSession(String id) {
+        retrieveWebRTCSession(id).ifPresent(session -> {
+            session.getPipeline().stop();
+            session.getWebRTCBin().dispose();
+            sessionRegistry.removeSession(id);
+        });
+    }
+
+    public Optional<WebRTCSession> retrieveWebRTCSession(String id) {
+        return sessionRegistry.retrieveSession(id);
+    }
+
+    public WebRTCSession loadOrCreateWebRTCSession(WebSocketSession webSocketSession) {
         WebRTCSession webRTCSession;
-        Optional<WebRTCSession> sessionOpt = binRegistry.retrieveSession(session.getId());
+        Optional<WebRTCSession> sessionOpt = retrieveWebRTCSession(webSocketSession.getId());
         if (sessionOpt.isPresent()) {
             webRTCSession = sessionOpt.get();
         } else {
             webRTCSession = gStreamerVideoService.prepareWebRTCVideoBin();
-            callbackService.setupWebRtc(webRTCSession.getWebRTCBin(), session);
-            binRegistry.registerSession(session.getId(), webRTCSession);
+            callbackService.setupWebRtc(webRTCSession.getWebRTCBin(), webSocketSession);
+            sessionRegistry.registerSession(webSocketSession.getId(), webRTCSession);
         }
         return webRTCSession;
     }

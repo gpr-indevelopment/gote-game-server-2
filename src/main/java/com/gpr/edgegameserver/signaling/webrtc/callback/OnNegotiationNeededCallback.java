@@ -2,7 +2,7 @@ package com.gpr.edgegameserver.signaling.webrtc.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.freedesktop.gstreamer.Element;
-import org.freedesktop.gstreamer.elements.WebRTCBin;
+import org.freedesktop.gstreamer.webrtc.WebRTCBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;

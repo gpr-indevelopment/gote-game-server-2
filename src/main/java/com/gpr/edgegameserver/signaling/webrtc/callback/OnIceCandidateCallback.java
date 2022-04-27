@@ -3,7 +3,7 @@ package com.gpr.edgegameserver.signaling.webrtc.callback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gpr.edgegameserver.signaling.ICECandidate;
 import com.gpr.edgegameserver.websocket.WebSocketMessage;
-import org.freedesktop.gstreamer.elements.WebRTCBin;
+import org.freedesktop.gstreamer.webrtc.WebRTCBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;

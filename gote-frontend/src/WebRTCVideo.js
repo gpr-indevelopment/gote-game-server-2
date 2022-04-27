@@ -51,6 +51,7 @@ export default function WebRTCVideo(props) {
   // WebRTC callbacks
   let gotLocalDescription = useCallback(
     (description) => {
+      console.log("Local description:", description);
       localPeer.setLocalDescription(description).catch(errorHandler);
       sendWsMessage("SDP_ANSWER", description);
     },
@@ -59,6 +60,7 @@ export default function WebRTCVideo(props) {
 
   let gotRemoteTrack = (event) => {
     let video = document.getElementById("stream");
+    console.log(event);
     if (video.srcObject !== event.streams[0]) {
       console.log("Incoming stream. Streams length: " + event.streams.length);
       video.srcObject = event.streams[0];

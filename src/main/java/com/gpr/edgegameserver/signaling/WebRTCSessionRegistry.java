@@ -2,7 +2,7 @@ package com.gpr.edgegameserver.signaling;
 
 import com.gpr.edgegameserver.streaming.WebRTCSession;
 import org.freedesktop.gstreamer.Pipeline;
-import org.freedesktop.gstreamer.elements.WebRTCBin;
+import org.freedesktop.gstreamer.webrtc.WebRTCBin;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class WebRTCBinRegistry {
+public class WebRTCSessionRegistry {
 
     private final Map<String, WebRTCSession> sessionMap = new HashMap<>();
 

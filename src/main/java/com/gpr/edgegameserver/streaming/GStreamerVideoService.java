@@ -1,10 +1,7 @@
 package com.gpr.edgegameserver.streaming;
 
-import org.freedesktop.gstreamer.Bin;
-import org.freedesktop.gstreamer.Gst;
-import org.freedesktop.gstreamer.GstObject;
-import org.freedesktop.gstreamer.Pipeline;
-import org.freedesktop.gstreamer.elements.WebRTCBin;
+import org.freedesktop.gstreamer.*;
+import org.freedesktop.gstreamer.webrtc.WebRTCBin;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -20,7 +17,7 @@ public class GStreamerVideoService {
     }
 
     public WebRTCSession prepareWebRTCVideoBin() {
-        Gst.init();
+        Gst.init(new Version(1, 14), "gote-game-server-2");
         WebRTCBin webRTCBin = new WebRTCBin("gstreamer-webrtc-server");
         Bin video = Gst.parseBinFromDescription(VIDEO_BIN_DESCRIPTION, true);
         Pipeline pipeline = new Pipeline();

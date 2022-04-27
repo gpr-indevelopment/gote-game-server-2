@@ -1,7 +1,7 @@
 package com.gpr.edgegameserver.streaming;
 
 import org.freedesktop.gstreamer.Pipeline;
-import org.freedesktop.gstreamer.elements.WebRTCBin;
+import org.freedesktop.gstreamer.webrtc.WebRTCBin;
 
 public class WebRTCSession {
 

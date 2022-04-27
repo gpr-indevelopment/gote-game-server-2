@@ -2,8 +2,8 @@ package com.gpr.edgegameserver.signaling;
 
 import com.gpr.edgegameserver.streaming.WebRTCSession;
 import org.freedesktop.gstreamer.SDPMessage;
-import org.freedesktop.gstreamer.WebRTCSDPType;
-import org.freedesktop.gstreamer.WebRTCSessionDescription;
+import org.freedesktop.gstreamer.webrtc.WebRTCSDPType;
+import org.freedesktop.gstreamer.webrtc.WebRTCSessionDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class WebRTCBinService {
 
     public void startSignaling(WebSocketSession session) {
         LOGGER.info("Starting signaling process and setting pipeline to play state. SessionID: {}", session.getId());
-        WebRTCSession webRTCSession = webRTCSessionService.loadWebRTCSession(session);
+        WebRTCSession webRTCSession = webRTCSessionService.loadOrCreateWebRTCSession(session);
         webRTCSession.getPipeline().play();
     }
 
@@ -35,13 +35,13 @@ public class WebRTCBinService {
         LOGGER.info("Received SDP answer: {}. SessionID: {}", sdp, session.getId());
         SDPMessage sdpMessage = new SDPMessage();
         sdpMessage.parseBuffer(sdp.getSdp());
-        WebRTCSession webRTCSession = webRTCSessionService.loadWebRTCSession(session);
+        WebRTCSession webRTCSession = webRTCSessionService.loadOrCreateWebRTCSession(session);
         webRTCSession.getWebRTCBin().setRemoteDescription(new WebRTCSessionDescription(WebRTCSDPType.ANSWER, sdpMessage));
     }
 
     public void receiveIceCandidate(ICECandidate candidate, WebSocketSession session) {
         LOGGER.info("Received ICE Candidate: {}. SessionID: {}", candidate, session.getId());
-        WebRTCSession webRTCSession = webRTCSessionService.loadWebRTCSession(session);
+        WebRTCSession webRTCSession = webRTCSessionService.loadOrCreateWebRTCSession(session);
         webRTCSession.getWebRTCBin().addIceCandidate(candidate.getSdpMLineIndex(), candidate.getCandidate());
     }
 }
