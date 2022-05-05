@@ -25,10 +25,17 @@ public class StatsCsvDumpService {
         Path csvFile = Files.createTempFile(sessionId + "-", ".csv");
         StringBuilder sb = prepareCsvHeaders();
         List<StreamingStatsRecord> foundRecords = statsRepository.findAllBySessionId(sessionId);
-        foundRecords.forEach(record -> appendRecordToCsv(sb, record));
-        Files.write(csvFile, sb.toString().getBytes(StandardCharsets.UTF_8));
-        LOGGER.info("Saved streaming stats CSV dump to path: {}", csvFile);
-        return buildResult(sessionId, foundRecords, csvFile);
+        if (foundRecords != null) {
+            foundRecords.forEach(record -> appendRecordToCsv(sb, record));
+            Files.write(csvFile, sb.toString().getBytes(StandardCharsets.UTF_8));
+            LOGGER.info("Saved streaming stats CSV dump to path: {}", csvFile);
+            return buildResult(sessionId, foundRecords, csvFile);
+        }
+        return buildEmptyResult(sessionId);
+    }
+
+    private StatsCsvDumpResult buildEmptyResult(String sessionId) {
+        return new StatsCsvDumpResult(null, sessionId, 0, 0L);
     }
 
     private StatsCsvDumpResult buildResult(String sessionId, List<StreamingStatsRecord> foundRecords, Path csvFile) {

@@ -30,6 +30,10 @@ public class WebSocketStatsDumpService {
     public void dumpSession(WebSocketSession session) {
         try {
             StatsCsvDumpResult result = statsCsvDumpService.dumpSession(session.getId());
+            if (result.getTotalRecords() == 0) {
+                LOGGER.info("Dump has no records for SessionID: {}. Will ignore.", session.getId());
+                return;
+            }
             LOGGER.info("Sending csv dump result of SessionID: {} back to WS with FINISH_STATS_DUMP type.", session.getId());
             WebSocketMessage message = new WebSocketMessage(FINISH_STATS_DUMP, mapper.valueToTree(result));
             session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
