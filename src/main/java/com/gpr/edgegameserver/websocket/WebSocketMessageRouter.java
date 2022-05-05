@@ -16,8 +16,11 @@ public class WebSocketMessageRouter {
 
     private final WebRTCBinService webRTCBinService;
 
-    public WebSocketMessageRouter(WebRTCBinService webRTCBinService) {
+    private final WebSocketStatsService webSocketStatsService;
+
+    public WebSocketMessageRouter(WebRTCBinService webRTCBinService, WebSocketStatsService webSocketStatsService) {
         this.webRTCBinService = webRTCBinService;
+        this.webSocketStatsService = webSocketStatsService;
     }
 
     public void routeMessage(WebSocketMessage message, WebSocketSession session) throws MalformattedSignalingException {
@@ -35,6 +38,9 @@ public class WebSocketMessageRouter {
                 break;
             case ICE_CANDIDATE:
                 webRTCBinService.receiveIceCandidate(DeserializationUtils.toIceCandidate(payload), session);
+                break;
+            case STATS_RECORD:
+                webSocketStatsService.storeStats(DeserializationUtils.toStreamingStatsRecord(payload), session);
                 break;
             default:
                 LOGGER.warn("It was not possible to route message: {}", message);

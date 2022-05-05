@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Button, Divider, Space, Spin, notification } from "antd";
 import { config } from "./constants";
+import StatsExporter from "./StatsExporter";
 
 export default function WebRTCVideo(props) {
   const [localPeer, setLocalPeer] = useState();
@@ -140,8 +141,8 @@ export default function WebRTCVideo(props) {
   useEffect(() => {
     if (ws) {
       ws.onopen = onWebSocketOpen;
-    ws.onmessage = onWebSocketMessage;
-    ws.onclose = () => errorHandler("Connection with WebSocket closed");
+      ws.onmessage = onWebSocketMessage;
+      ws.onclose = () => errorHandler("Connection with WebSocket closed");
     }
   }, [ws, onWebSocketOpen, onWebSocketMessage, errorHandler]);
 
@@ -188,6 +189,10 @@ export default function WebRTCVideo(props) {
             Stop
           </Button>
         </Space>
+      </div>
+      <Divider />
+      <div className="container">
+        <StatsExporter peerConnection={localPeer} webSocket={ws} />
       </div>
     </Spin>
   );
