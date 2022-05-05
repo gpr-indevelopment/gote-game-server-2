@@ -1,7 +1,9 @@
 const prod = {
-  url: "ws://" + window.location.host + "/server",
+  ws: "ws://" + window.location.host + "/server",
+  rest: ""
 };
 const dev = {
-  url: "ws://localhost:8080/server",
+  ws: "ws://localhost:8080/server",
+  rest: "http://localhost:8080"
 };
 export const config = process.env.NODE_ENV === "development" ? dev : prod;

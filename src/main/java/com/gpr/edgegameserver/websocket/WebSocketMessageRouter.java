@@ -18,13 +18,16 @@ public class WebSocketMessageRouter {
 
     private final WebSocketStatsService webSocketStatsService;
 
-    public WebSocketMessageRouter(WebRTCBinService webRTCBinService, WebSocketStatsService webSocketStatsService) {
+    private final WebSocketStatsDumpService webSocketStatsDumpService;
+
+    public WebSocketMessageRouter(WebRTCBinService webRTCBinService, WebSocketStatsService webSocketStatsService, WebSocketStatsDumpService webSocketStatsDumpService) {
         this.webRTCBinService = webRTCBinService;
         this.webSocketStatsService = webSocketStatsService;
+        this.webSocketStatsDumpService = webSocketStatsDumpService;
     }
 
     public void routeMessage(WebSocketMessage message, WebSocketSession session) throws MalformattedSignalingException {
-        LOGGER.info("Routing message: {}", message);
+        LOGGER.debug("Routing message: {}", message);
         JsonNode payload = message.getPayload();
         switch (message.getMessageType()) {
             case START:
@@ -41,6 +44,9 @@ public class WebSocketMessageRouter {
                 break;
             case STATS_RECORD:
                 webSocketStatsService.storeStats(DeserializationUtils.toStreamingStatsRecord(payload), session);
+                break;
+            case START_STATS_DUMP:
+                webSocketStatsDumpService.dumpSession(session);
                 break;
             default:
                 LOGGER.warn("It was not possible to route message: {}", message);

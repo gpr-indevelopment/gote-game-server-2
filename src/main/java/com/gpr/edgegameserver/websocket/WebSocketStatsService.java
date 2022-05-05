@@ -21,6 +21,6 @@ public class WebSocketStatsService {
     public void storeStats(StreamingStatsRecord streamingStatsRecord, WebSocketSession session) {
         streamingStatsRecord.setSessionId(session.getId());
         StreamingStatsRecord savedRecord = statsRepository.save(streamingStatsRecord);
-        LOGGER.info("Successfully persisted StreamingStatsRecord {} on SessionID: {}", savedRecord, session.getId());
+        LOGGER.debug("Successfully persisted StreamingStatsRecord {} on SessionID: {}", savedRecord, session.getId());
     }
 }

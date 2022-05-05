@@ -27,7 +27,7 @@ public class WebSocketTextHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage incomingMessage) {
-        LOGGER.info("Received message: {}", incomingMessage);
+        LOGGER.debug("Received message: {}", incomingMessage);
         try {
             WebSocketMessage message = deserializeMessage(incomingMessage);
             webSocketMessageRouter.routeMessage(message, session);

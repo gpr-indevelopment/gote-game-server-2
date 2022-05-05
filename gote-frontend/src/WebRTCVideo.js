@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Button, Divider, Space, Spin, notification } from "antd";
 import { config } from "./constants";
 import StatsExporter from "./StatsExporter";
+import StatsDumper from "./StatsDumper";
 
 export default function WebRTCVideo(props) {
   const [localPeer, setLocalPeer] = useState();
@@ -103,6 +104,15 @@ export default function WebRTCVideo(props) {
             // var ice = new RTCIceCandidate(data.payload);
             // localPeer.addIceCandidate(ice).catch(errorHandler);
             break;
+          case "FINISH_STATS_DUMP":
+            console.log(data.payload);
+            let timestampSeconds = data.payload.deltaTimestamp/1000;
+            notification.success({
+              message: "CSV stats dump successful!",
+              description: `Total records: ${data.payload.totalRecords}. Delta timestamp: ${timestampSeconds}s. SessionID: ${data.payload.sessionId}`,
+              duration: 0
+            });
+            break;
           default:
             console.log("Unknown messageType. Will ignore: ", data.messageType);
             break;
@@ -132,7 +142,7 @@ export default function WebRTCVideo(props) {
 
   let onConnectClick = () => {
     setLoading(true);
-    setWs(new WebSocket(config.url));
+    setWs(new WebSocket(config.ws));
     setLocalPeer(new RTCPeerConnection());
     setConnectDisabled(true);
     setLoading(false);
@@ -192,7 +202,10 @@ export default function WebRTCVideo(props) {
       </div>
       <Divider />
       <div className="container">
-        <StatsExporter peerConnection={localPeer} webSocket={ws} />
+        <Space>
+          <StatsExporter peerConnection={localPeer} webSocket={ws} />
+          <StatsDumper webSocket={ws}/>
+        </Space>
       </div>
     </Spin>
   );
