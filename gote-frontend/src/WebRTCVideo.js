@@ -12,6 +12,12 @@ export default function WebRTCVideo(props) {
   const [ws, setWs] = useState();
   const [loading, setLoading] = useState(false);
 
+  let instantiateRtcPeer = () => {
+    let rtcConfiguration = {iceServers: [{urls: "stun:stun.services.mozilla.com"},
+                                      {urls: "stun:stun.l.google.com:19302"}]};
+    return new RTCPeerConnection(rtcConfiguration);
+  }
+
   // Standard message format to backend
   let sendWsMessage = useCallback(
     (messageType, payload) => {
@@ -32,7 +38,7 @@ export default function WebRTCVideo(props) {
     setConnectDisabled(false);
     setStartButtonDisabled(true);
     setStopButtonDisabled(true);
-    setLocalPeer(new RTCPeerConnection());
+    setLocalPeer(instantiateRtcPeer());
     setWs(null);
     sendWsMessage("STOP");
   }, [sendWsMessage]);
@@ -134,7 +140,7 @@ export default function WebRTCVideo(props) {
   };
 
   let onStopClick = useCallback(() => {
-    setLocalPeer(new RTCPeerConnection());
+    setLocalPeer(instantiateRtcPeer());
     sendWsMessage("STOP");
     setStartButtonDisabled(false);
     setStopButtonDisabled(true);
@@ -143,7 +149,7 @@ export default function WebRTCVideo(props) {
   let onConnectClick = () => {
     setLoading(true);
     setWs(new WebSocket(config.ws));
-    setLocalPeer(new RTCPeerConnection());
+    setLocalPeer(instantiateRtcPeer());
     setConnectDisabled(true);
     setLoading(false);
   };
