@@ -24,6 +24,8 @@ public class GStreamerVideoService {
         pipeline.addMany(webRTCBin, video);
         video.link(webRTCBin);
         setMediaDirection(webRTCBin);
+        webRTCBin.setTurnServer("turn://webrtc%40live.com:muazkh@numb.viagenie.ca");
+        webRTCBin.setStunServer("stun:stun.services.mozilla.com");
         return new WebRTCSession(webRTCBin, pipeline);
     }
 

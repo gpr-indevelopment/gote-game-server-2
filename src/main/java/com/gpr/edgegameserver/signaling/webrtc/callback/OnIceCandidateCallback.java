@@ -31,7 +31,7 @@ public class OnIceCandidateCallback implements WebRTCBin.ON_ICE_CANDIDATE {
         LOGGER.info("Generated local ICE Candidate: {} on SessionID: {}. Will not send to remote.", candidate, session.getId());
         // Since this stream is one-way, there is no need for the peer to know this server's ICE candidates.
         // Call below function if client requires ICE candidates from this server.
-        // sendLocalIceCandidate(sdpMLineIndex, candidate);
+        sendLocalIceCandidate(sdpMLineIndex, candidate);
     }
 
     private void sendLocalIceCandidate(int sdpMLineIndex, String candidate) {

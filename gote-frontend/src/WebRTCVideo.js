@@ -13,10 +13,19 @@ export default function WebRTCVideo(props) {
   const [loading, setLoading] = useState(false);
 
   let instantiateRtcPeer = () => {
-    let rtcConfiguration = {iceServers: [{urls: "stun:stun.services.mozilla.com"},
-                                      {urls: "stun:stun.l.google.com:19302"}]};
+    let rtcConfiguration = {
+      iceServers: [
+        { urls: "stun:stun.services.mozilla.com" },
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          url: 'turn:numb.viagenie.ca',
+          credential: 'muazkh',
+          username: 'webrtc@live.com'
+        },
+      ]
+    };
     return new RTCPeerConnection(rtcConfiguration);
-  }
+  };
 
   // Standard message format to backend
   let sendWsMessage = useCallback(
@@ -81,6 +90,7 @@ export default function WebRTCVideo(props) {
 
   let gotLocalIceCandidate = (event) => {
     if (event.candidate) {
+      console.log("Found local candidate:", event.candidate);
       sendWsMessage("ICE_CANDIDATE", event.candidate);
     } else {
       console.log("All ICE candidates have been sent.");
@@ -107,16 +117,16 @@ export default function WebRTCVideo(props) {
           case "ICE_CANDIDATE":
             console.log("Received ICE candidate. Will ignore: ", data.payload);
             // What to do if remote ICE candidates are not ignored.
-            // var ice = new RTCIceCandidate(data.payload);
-            // localPeer.addIceCandidate(ice).catch(errorHandler);
+            var ice = new RTCIceCandidate(data.payload);
+            localPeer.addIceCandidate(ice).catch(errorHandler);
             break;
           case "FINISH_STATS_DUMP":
             console.log(data.payload);
-            let timestampSeconds = data.payload.deltaTimestamp/1000;
+            let timestampSeconds = data.payload.deltaTimestamp / 1000;
             notification.success({
               message: "CSV stats dump successful!",
               description: `Total records: ${data.payload.totalRecords}. Delta timestamp: ${timestampSeconds}s. SessionID: ${data.payload.sessionId}`,
-              duration: 0
+              duration: 0,
             });
             break;
           default:
@@ -210,7 +220,7 @@ export default function WebRTCVideo(props) {
       <div className="container">
         <Space>
           <StatsExporter peerConnection={localPeer} webSocket={ws} />
-          <StatsDumper webSocket={ws}/>
+          <StatsDumper webSocket={ws} />
         </Space>
       </div>
     </Spin>
