@@ -77,15 +77,10 @@ export default function WebRTCVideo(props) {
 
   let gotRemoteTrack = (event) => {
     let video = document.getElementById("stream");
-    console.log(event);
-    if (video.srcObject !== event.streams[0]) {
-      console.log("Incoming stream. Streams length: " + event.streams.length);
-      video.srcObject = event.streams[0];
-      setStopButtonDisabled(false);
-      setLoading(false);
-    } else {
-      errorHandler("Video source object is already filled!");
-    }
+    console.log("Incoming stream. Streams length: " + event.streams.length);
+    video.srcObject = event.streams[0];
+    setStopButtonDisabled(false);
+    setLoading(false);
   };
 
   let gotLocalIceCandidate = (event) => {
