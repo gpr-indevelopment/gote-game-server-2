@@ -50,7 +50,7 @@ public class DeserializationUtils {
                 .jitter(jsonNode.get("jitter").asDouble())
                 .packetsLost(jsonNode.get("packetsLost").asInt())
                 .bytesReceived(jsonNode.get("bytesReceived").asLong())
-                .framesPerSecond(jsonNode.get("framesPerSecond").asDouble())
+                .framesPerSecond(jsonNode.get("framesPerSecond") == null ? 0 : jsonNode.get("framesPerSecond").asDouble())
                 .framesDropped(jsonNode.get("framesDropped").asInt())
                 .frameHeight(jsonNode.get("frameHeight").asInt())
                 .frameWidth(jsonNode.get("frameWidth").asInt())
