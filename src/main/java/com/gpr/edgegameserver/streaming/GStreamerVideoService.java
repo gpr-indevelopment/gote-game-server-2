@@ -9,7 +9,14 @@ import javax.annotation.PreDestroy;
 @Service
 public class GStreamerVideoService {
 
-    private static final String VIDEO_BIN_DESCRIPTION = "dxgiscreencapsrc cursor=true ! capsfilter caps=\"video/x-raw,framerate=60/1\" ! queue ! nvh264enc bitrate=2250 rc-mode=vbr gop-size=-1 qos=true preset=low-latency-hq ! capsfilter caps=\"video/x-h264,profile=high\" ! queue ! rtph264pay ! capsfilter caps=\"application/x-rtp,media=video,encoding-name=H264,width=1280,height=720,payload=123\"";
+    private static final String VIDEO_BIN_DESCRIPTION = "dxgiscreencapsrc cursor=true ! videoscale ! capsfilter caps=\"video/x-raw,width=1280,height=720,framerate=60/1\" ! queue ! nvh264enc bitrate=4000 rc-mode=cbr gop-size=-1 qos=true preset=low-latency spatial-aq=true nonref-p=true vbv-buffer-size=67 ! capsfilter caps=\"video/x-h264,profile=high\" ! queue ! rtph264pay ! capsfilter caps=\"application/x-rtp,media=video,encoding-name=H264,width=1280,height=720,payload=123\"";
+
+    private static final String PIPELINE_DESCRIPTION
+            = "videotestsrc is-live=true pattern=ball ! videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay"
+            + " ! queue ! application/x-rtp,media=video,encoding-name=VP8,payload=97 ! webrtcbin. "
+            + "audiotestsrc is-live=true wave=sine ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay"
+            + " ! queue ! application/x-rtp,media=audio,encoding-name=OPUS,payload=96 ! webrtcbin. "
+            + "webrtcbin name=webrtcbin bundle-policy=max-bundle stun-server=stun://stun.l.google.com:19302 ";
 
     private static final String STUN_SERVER = "stun://stun.l.google.com:19302";
 
