@@ -14,6 +14,7 @@ This implementation covers the rendering server and the player client web applic
 * Windows (for running a streamable game).
 * Java 11 or later (for running the rendering server application).
 * GStreamer (refer to this [documentation](https://gstreamer.freedesktop.org/documentation/installing/on-windows.html))
+* NVIDIA Video Codec SDK [requirements](https://developer.nvidia.com/nvidia-video-codec-sdk/download)
 
 ## Getting started
 
