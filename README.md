@@ -23,7 +23,7 @@ This implementation covers the rendering server and the player client web applic
 * Click the "Connect" button, followed by "Start GOTE!". After a brief moment your main monitor should start being streamed to the browser client.
 * The GStreamer pipeline responsible for the video is [here](src/main/java/com/gpr/edgegameserver/streaming/GStreamerVideoService.java).
 
-![image info](./readme-assets/Streaming-example.JPG)
+![image info](./readme-assets/Streaming-example-warhammer.jpg)
 
 ## Known limitations
 
