@@ -21,7 +21,7 @@ This implementation covers the rendering server and the player client web applic
 * Start by running `.\mvnw.cmd spring-boot:run` on the root of the project. It will start the rendering server Spring Boot application.
 * Access `http://localhost:8080/`. This would be the player client web application served by the rendering server.
 * Click the "Connect" button, followed by "Start GOTE!". After a brief moment your main monitor should start being streamed to the browser client.
-* The GStreamer pipeline responsible for the video is [here](.\src\main\java\com\gpr\edgegameserver\streaming\GStreamerVideoService.java).
+* The GStreamer pipeline responsible for the video is [here](src/main/java/com/gpr/edgegameserver/streaming/GStreamerVideoService.java).
 
 ![image info](./readme-assets/Streaming-example.JPG)
 
