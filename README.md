@@ -31,3 +31,9 @@ This implementation covers the rendering server and the player client web applic
 * This implementation is dependant on the Windows platform, due to compatibility with a wider range of games.
 * The scope of this POC does not cover audio.
 * This POC does not use a TURN server for WebRTC. For this reason, streaming will not work when the peers are in different private networks, and the player client's router uses symmetric NAT.
+
+## License
+
+This code is made available under the GPL license enclosed with the software.
+
+Over and above the legal restrictions imposed by this license, if you use this software for an academic publication then you are obliged to provide proper attribution. This can be to this code directly, or to the paper that describes it, or (ideally) both.
